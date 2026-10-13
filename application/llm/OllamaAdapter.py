@@ -1,7 +1,7 @@
 
 from ollama import Client
 
-from app.DataModel import Claim
+from application.DataModel import Claim
 
 
 class OllamaLLM:

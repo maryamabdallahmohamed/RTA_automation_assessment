@@ -1,7 +1,4 @@
 """Gradio interface for the fictional CNF claim-intake assessment."""
-
-
-
 import json
 import logging
 import os
@@ -11,16 +8,16 @@ from tempfile import TemporaryDirectory
 import gradio as gr
 from dotenv import load_dotenv
 
-from app.llm.GeminiAdapter import GeminiLLM
-from app.report import render_report_html
-from app.utils import map_claims
+from application.llm.GeminiAdapter import GeminiLLM
+from application.report import render_report_html
+from application.utils import map_claims
 
 
 load_dotenv()
 
 LOGGER = logging.getLogger(__name__)
 PROJECT_ROOT = Path(__file__).resolve().parent
-PROMPT_PATH = PROJECT_ROOT / "app" / "prompt.yaml"
+PROMPT_PATH = PROJECT_ROOT / "application" / "prompt.yaml"
 SAFETY_LABEL = "DRAFT — HUMAN REVIEW REQUIRED — NOT FOR SUBMISSION"
 
 

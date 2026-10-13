@@ -2,8 +2,8 @@ import json
 import os
 from pathlib import Path
 from dotenv import load_dotenv
-from app.utils import *
-from app.report import render_report_html
+from application.utils import *
+from application.report import render_report_html
 
 load_dotenv()
 
@@ -14,7 +14,7 @@ model = os.getenv("GEMINI_MODEL")
 
 def main() -> None:
     input_dir=Path("data")
-    prompt=Path("app/prompt.yaml")
+    prompt=Path("application/prompt.yaml")
     result = map_claims(input_dir, prompt, GeminiLLM(api_key=api_key, model=model))
     payload = json.dumps(result, indent=2, ensure_ascii=False)
     

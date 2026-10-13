@@ -5,14 +5,14 @@
 Run `uv sync`, set `GEMINI_API_KEY` and `GEMINI_MODEL` in the environment (or `.env`), then run:
 
 ```bash
-uv run python -m app.main
+uv run python -m application.main
 ```
 
 This reads `.txt` files from `data/`, prints claim JSON, and writes `claim_review_draft.html`.
 
 ## Assumptions
 
-The model returns the twelve fields in `app/DataModel.py`; missing or conflicting values remain unresolved. The HTML is a review draft, not a submit-ready form.
+The model returns the twelve fields in `application/DataModel.py`; missing or conflicting values remain unresolved. The HTML is a review draft, not a submit-ready form.
 
 Since the data given are examples,they were posted in the repo. Future data or claims should not be availble publically.
 

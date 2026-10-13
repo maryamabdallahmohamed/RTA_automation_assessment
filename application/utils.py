@@ -1,7 +1,7 @@
 from pathlib import Path
 import yaml
-from app.llm.GeminiAdapter import GeminiLLM
-from app.llm.OllamaAdapter import OllamaLLM
+from application.llm.GeminiAdapter import GeminiLLM
+from application.llm.OllamaAdapter import OllamaLLM
 import logging
 
 logging.basicConfig(level=logging.INFO)

@@ -1,6 +1,6 @@
 
 from typing import Protocol
-from app.DataModel import Claim
+from application.DataModel import Claim
 
 
 class ClaimExtractor(Protocol):
