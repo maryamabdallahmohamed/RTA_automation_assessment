@@ -32,6 +32,34 @@ PROMPT_PATH = PROJECT_ROOT / "application" / "prompt.yaml"
 SAFETY_LABEL = "DRAFT — HUMAN REVIEW REQUIRED — NOT FOR SUBMISSION"
 
 
+REPORT_CSS = """
+#draft-report, #draft-report * {
+    background-color: transparent !important;
+    color: var(--body-text-color) !important;
+    border-color: var(--border-color-primary) !important;
+}
+#draft-report table { border-collapse: collapse; width: 100%; }
+#draft-report th {
+    background-color: var(--background-fill-secondary) !important;
+    font-weight: 600;
+    text-align: left;
+}
+#draft-report th, #draft-report td { border: 1px solid var(--border-color-primary) !important; }
+#draft-report [class*="banner"], #draft-report [class*="warn"],
+#draft-report [class*="notice"], #draft-report [class*="alert"],
+#draft-report [class*="draft"] {
+    background-color: rgba(217, 95, 40, 0.15) !important;
+    border: 1px solid #d95f28 !important;
+    border-left: 4px solid #d95f28 !important;
+}
+"""
+
+
+def _wrap_report(report_html: str) -> str:
+    """Scope theme-aware CSS to the report so it follows the app's dark/light theme."""
+    return f"<style>{REPORT_CSS}</style><div id='draft-report'>{report_html}</div>"
+
+
 @spaces.GPU(duration=10)
 def _zerogpu_placeholder() -> str:
     """Never called by the UI.
@@ -123,7 +151,8 @@ def process_note(note: str) -> tuple[str, str, str, str]:
         )
 
     payload = json.dumps(result, indent=2, ensure_ascii=False)
-    return payload, render_report_html(result), _format_issues(result), f"**{SAFETY_LABEL}**"
+    report_html = _wrap_report(render_report_html(result))
+    return payload, report_html, _format_issues(result), f"**{SAFETY_LABEL}**"
 
 
 def _load_sample(selected_case: str | None) -> str:
