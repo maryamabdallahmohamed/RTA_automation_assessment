@@ -1,4 +1,15 @@
 """Gradio interface for the fictional CNF claim-intake assessment."""
+# `spaces` must be imported before any other heavy library on ZeroGPU Spaces.
+try:
+    import spaces
+except ImportError:  # running locally without the `spaces` package
+    class spaces:  # noqa: N801 - minimal stand-in so the decorator is a no-op
+        @staticmethod
+        def GPU(*args, **kwargs):
+            if len(args) == 1 and callable(args[0]) and not kwargs:
+                return args[0]
+            return lambda fn: fn
+
 import json
 import logging
 import os
@@ -12,11 +23,6 @@ from application.llm.GeminiAdapter import GeminiLLM
 from application.report import render_report_html
 from application.utils import map_claims
 
-import spaces
-
-@spaces.GPU
-def gpu_check():
-    return "ok"
 
 load_dotenv()
 
@@ -26,15 +32,29 @@ PROMPT_PATH = PROJECT_ROOT / "application" / "prompt.yaml"
 SAFETY_LABEL = "DRAFT — HUMAN REVIEW REQUIRED — NOT FOR SUBMISSION"
 
 
+@spaces.GPU(duration=10)
+def _zerogpu_placeholder() -> str:
+    """Never called by the UI.
+
+    ZeroGPU refuses to start a Space unless at least one @spaces.GPU function
+    exists. This app only calls the Gemini API, so no GPU is ever requested
+    and no GPU quota is consumed.
+    """
+    return "ok"
+
+
 def _sample_cases() -> list[tuple[str, str]]:
     """Return available fictional notes without reading user input as a path."""
     data_dir = PROJECT_ROOT / "data"
     if not data_dir.is_dir():
         return []
-    return [
-        (path.name, path.read_text(encoding="utf-8"))
-        for path in sorted(data_dir.glob("*.txt"))
-    ]
+    cases = []
+    for path in sorted(data_dir.glob("*.txt")):
+        try:
+            cases.append((path.name, path.read_text(encoding="utf-8")))
+        except (OSError, UnicodeDecodeError):
+            LOGGER.warning("Skipping unreadable sample file: %s", path.name)
+    return cases
 
 
 def _format_issues(result: list[dict]) -> str:
@@ -140,7 +160,7 @@ def build_demo() -> gr.Blocks:
                 submit = gr.Button("Assess note", variant="primary")
             with gr.Column():
                 status = gr.Markdown(f"**{SAFETY_LABEL}**")
-                issues = gr.Markdown(label="Review issues")
+                issues = gr.Markdown()
 
         with gr.Tab("Structured JSON"):
             structured_json = gr.Code(label="Extracted claim", language="json")
@@ -154,8 +174,6 @@ def build_demo() -> gr.Blocks:
             outputs=[structured_json, report, issues, status],
         )
     return demo
-
-
 
 
 demo = build_demo()
