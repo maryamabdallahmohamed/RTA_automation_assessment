@@ -3,6 +3,7 @@ import os
 from pathlib import Path
 from dotenv import load_dotenv
 from app.utils import *
+from app.report import render_report_html
 
 load_dotenv()
 
@@ -11,8 +12,6 @@ model = os.getenv("GEMINI_MODEL")
 # api_key = os.getenv("OLLAMA_API_KEY")
 # model = os.getenv("OLLAMA_MODEL")
 
-
-
 def main() -> None:
     input_dir=Path("data")
     prompt=Path("app/prompt.yaml")
@@ -20,6 +19,7 @@ def main() -> None:
     payload = json.dumps(result, indent=2, ensure_ascii=False)
     
     print(payload)
+    Path("claim_review_draft.html").write_text(render_report_html(result), encoding="utf-8")
 
 
 

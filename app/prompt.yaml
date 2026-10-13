@@ -23,8 +23,15 @@ SystemPrompt: |
      explain the ambiguity in note. Use 24-hour HH:MM for times and put hedges such as "about" in note.
   6. claimant_role is "driver", "passenger", or "other" only when the note states the claimant's role.
   7. Copy registrations exactly as written. A record reference is not a registration.
+     A vehicle registration may be stated as "vehicle X" or "registration X"; map the
+     claimant's vehicle and the other vehicle from the surrounding wording. Do not mark
+     either registration missing when the note identifies it this way.
   8. Do not call a vehicle uninsured unless the note explicitly says it is uninsured.
-  9. Do not assess fault or liability, summarise the accident, diagnose, or add fields.
+  9. if multiple dates are reported but the accident date is clearly stated , mark as accident date and note in evidence.
+   10 .If the other insurer is unknown, record that fact but note that unknown insurer
+     details do not establish that the vehicle was uninsured.
+  11. For conflicts, preserve every reported value and its verbatim supporting evidence
+     in reported_versions. A conflict is not a missing field: do not also use a generic
+     missing or unresolved result for that field.
+  12. Do not assess fault or liability, summarise the accident, diagnose, or add fields.
      Preserve the wording of names, addresses, locations, and injuries where possible.
-
-UserPrompt: ""
