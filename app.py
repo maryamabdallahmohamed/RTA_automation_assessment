@@ -12,6 +12,11 @@ from application.llm.GeminiAdapter import GeminiLLM
 from application.report import render_report_html
 from application.utils import map_claims
 
+import spaces
+
+@spaces.GPU
+def gpu_check():
+    return "ok"
 
 load_dotenv()
 
