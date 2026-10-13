@@ -15,7 +15,7 @@ from application.utils import map_claims
 
 load_dotenv()
 
-LOGGER = logging.getLogger(__name__)
+LOGGER = logging.getLogger("gradio.app")
 PROJECT_ROOT = Path(__file__).resolve().parent
 PROMPT_PATH = PROJECT_ROOT / "application" / "prompt.yaml"
 SAFETY_LABEL = "DRAFT — HUMAN REVIEW REQUIRED — NOT FOR SUBMISSION"
