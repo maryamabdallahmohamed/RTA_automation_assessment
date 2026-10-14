@@ -24,7 +24,7 @@ def load_prompt(path: str | Path) -> str:
     return prompt["SystemPrompt"]
 
 
-def map_claims(input_dir: str | Path, prompt_path: str | Path, llm : GeminiLLM | OllamaLLM) -> list[dict]:
+def map_claims(input_dir: str | Path, prompt_path: str | Path, llm : GeminiLLM | OllamaLLM ) -> list[dict]:
     system_prompt = load_prompt(prompt_path)
     claims = []
     for file_path in get_all_files(input_dir):

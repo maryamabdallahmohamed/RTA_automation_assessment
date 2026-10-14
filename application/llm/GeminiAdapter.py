@@ -1,8 +1,9 @@
 from google import genai
 from application.DataModel import Claim
+from application.llm.base import ClaimExtractor
 
 
-class GeminiLLM:
+class GeminiLLM(ClaimExtractor):
     def __init__(self, api_key: str, model: str ):
         if not api_key:
             raise ValueError("Api key is required")

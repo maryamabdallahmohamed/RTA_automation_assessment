@@ -1,34 +1,38 @@
+from dotenv import load_dotenv
+from langchain_ollama import ChatOllama
 
-from ollama import Client
+from application.llm.base import ClaimExtractor
+from application.DataModel import Claim  
 
-from application.DataModel import Claim
+load_dotenv()
 
 
-class OllamaLLM:
-    def __init__(self, model: str, host: str = "http://localhost:11434",):
-        self.client = Client(host=host)
-        self.model = model
+class OllamaLLM(ClaimExtractor):
+    def __init__(self,api_key: str = None, model: str = None):
+        api_key = api_key
+        base_url = 'https://api.ollama.com'
+        model= model
 
-    def extract_claim(self, system_prompt: str, intake_note: str,) -> Claim:
-        response = self.client.chat(
-            model=self.model,
-            messages=[
-                {
-                    "role": "system",
-                    "content": system_prompt,
-                },
-                {
-                    "role": "user",
-                    "content": (
-                        "Extract the claim from this intake note:\n"
-                        f"<intake_note>{intake_note}</intake_note>"
-                    ),
-                },
-            ],
-            format=Claim.model_json_schema(),
-            options={"temperature": 0},
+        self.llm = ChatOllama(
+            model=model,
+            temperature=0.0,
+            base_url=base_url,
+            client_kwargs={
+                "headers": (
+                    {"Authorization": f"Bearer {api_key}"}
+                )
+            },
         )
 
-        output_text = response.message.content
+    def extract_claim(self, system_prompt: str, intake_note: str,) -> Claim:
+        response = self.llm.invoke(
+            f"{system_prompt}\n\n"
+            f"<intake_note>\n{intake_note}\n</intake_note>"
+        )
 
-        return Claim.model_validate_json(output_text)
+        content = response.content
+
+        if not isinstance(content, str):
+            raise ValueError("Ollama returned non-text content.")
+
+        return Claim.model_validate_json(content)
