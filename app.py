@@ -1,7 +1,6 @@
 """Gradio interface for the fictional CNF claim-intake assessment."""
-# `spaces` must be imported before any other heavy library on ZeroGPU Spaces.
-try:
-    import spaces
+
+try:import spaces
 except ImportError:  # running locally without the `spaces` package
     class spaces:  # noqa: N801 - minimal stand-in so the decorator is a no-op
         @staticmethod
@@ -19,7 +18,7 @@ from tempfile import TemporaryDirectory
 import gradio as gr
 from dotenv import load_dotenv
 
-from application.llm.GeminiAdapter import GeminiLLM
+from application.llm.OllamaAdapter import OllamaLLM
 from application.report import render_report_html
 from application.utils import map_claims
 
@@ -125,24 +124,14 @@ def process_note(note: str) -> tuple[str, str, str, str]:
     if not note or not note.strip():
         return _error_outputs("Enter a fictional intake note before submitting.")
 
-    api_key = os.getenv("GEMINI_API_KEY")
-    model = os.getenv("GEMINI_MODEL")
-    if not api_key:
-        return _error_outputs(
-            "GEMINI_API_KEY is not configured. Add it as an environment variable "
-            "or Hugging Face Space Secret."
-        )
-    if not model:
-        return _error_outputs(
-            "GEMINI_MODEL is not configured. Add it as an environment variable "
-            "or Hugging Face Space Secret."
-        )
+    api_key = os.getenv("OLLAMA_API_KEY")
+    model = os.getenv("OLLAMA_MODEL")
 
     try:
         with TemporaryDirectory(prefix="cnf-claim-") as temporary_directory:
             input_path = Path(temporary_directory) / "intake_note.txt"
             input_path.write_text(note, encoding="utf-8")
-            result = map_claims(input_path.parent, PROMPT_PATH, GeminiLLM(api_key, model))
+            result = map_claims(input_path.parent, PROMPT_PATH, OllamaLLM(api_key, model))
     except Exception:
         LOGGER.exception("Claim-intake processing failed")
         return _error_outputs(
